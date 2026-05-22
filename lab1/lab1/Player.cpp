@@ -18,9 +18,9 @@ Player::Player(int x, int y, int cellSize)
   damageTimer.restart();
 }
 
-void Player::Attack(Creature* creature) {
+void Player::Attack(Creature& creature) {
   if (attackClock.getElapsedTime().asSeconds() >= attack_speed) {
-    creature->TakeDmg(dmg);
+    creature.TakeDmg(dmg);
     attackClock.restart();
   }
 }

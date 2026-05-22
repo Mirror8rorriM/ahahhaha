@@ -18,7 +18,7 @@ class Creature {
   Creature(int x, int y);
   virtual void TakeDmg(int dmg_to_take);
   void Deth();
-  virtual void Attack(Creature* creature) = 0;
+  virtual void Attack(Creature& creature) = 0;
   int GetHp() const;
   int GetDmg() const;
   sf::Vector2f getPosition() const;

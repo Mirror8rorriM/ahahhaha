@@ -53,9 +53,9 @@ void Game::PlayerMove(sf::Event& event) {
   }
 
   if (map.isEnemyAt(nextPos.x, nextPos.y)) {
-    for (Enemy* enemy : enemies) {
+    for (const auto& enemy : enemies) {
       if (enemy->getPosition() == nextPos) {
-        player.Attack(enemy);
+        player.Attack(*enemy);
         return;
       }
     }
@@ -71,7 +71,7 @@ int Game::PlayerShoot(sf::Event& event) {
       shootTurn = static_cast<int>(Turn::up);
       shootClock.restart();
       for (int i = 1; i <= player.GetPistolRange(); ++i) {
-        for (Enemy* enemy : enemies) {
+        for (const auto& enemy : enemies) {
           if (enemy->getPosition() ==
               sf::Vector2f(player.x_pos, player.y_pos - i)) {
             enemy->TakeDmg(player.GetPistolDmg());
@@ -85,7 +85,7 @@ int Game::PlayerShoot(sf::Event& event) {
       shootTurn = static_cast<int>(Turn::down);
       shootClock.restart();
       for (int i = 1; i <= player.GetPistolRange(); ++i) {
-        for (Enemy* enemy : enemies) {
+        for (const auto& enemy : enemies) {
           if (enemy->getPosition() ==
               sf::Vector2f(player.x_pos, player.y_pos + i)) {
             enemy->TakeDmg(player.GetPistolDmg());
@@ -98,7 +98,7 @@ int Game::PlayerShoot(sf::Event& event) {
       shootTurn = static_cast<int>(Turn::left);
       shootClock.restart();
       for (int i = 1; i <= player.GetPistolRange(); ++i) {
-        for (Enemy* enemy : enemies) {
+        for (const auto& enemy : enemies) {
           if (enemy->getPosition() ==
               sf::Vector2f(player.x_pos - i, player.y_pos)) {
             enemy->TakeDmg(player.GetPistolDmg());
@@ -111,7 +111,7 @@ int Game::PlayerShoot(sf::Event& event) {
       shootTurn = static_cast<int>(Turn::right);
       shootClock.restart();
       for (int i = 1; i <= player.GetPistolRange(); ++i) {
-        for (Enemy* enemy : enemies) {
+        for (const auto& enemy : enemies) {
           if (enemy->getPosition() ==
               sf::Vector2f(player.x_pos + i, player.y_pos)) {
             enemy->TakeDmg(player.GetPistolDmg());
@@ -145,10 +145,10 @@ void Game::PlayerTp(sf::Event& event) {
     }
   }
 }
-void Game::PlayerMovement(sf::Event& event, int* shootDistance) {
+void Game::PlayerMovement(sf::Event& event, int& shootDistance) {
   if (event.type == sf::Event::KeyPressed) {
     PlayerMove(event);
-    *shootDistance = PlayerShoot(event);
+    shootDistance = PlayerShoot(event);
     PlayerTp(event);
   }
 }
@@ -174,10 +174,10 @@ void Game::Run() {
            event.key.code == sf::Keyboard::Escape))
         window.close();
 
-      PlayerMovement(event, &shootDistance);
+      PlayerMovement(event, shootDistance);
     }
     if (enemyClock.getElapsedTime().asSeconds() >= moveDelay) {
-      for (Enemy* enemy : enemies) {
+      for (const auto& enemy : enemies) {
         if (enemy->IsAlive()) {
           enemy->Ai(map, player);
         }
@@ -185,9 +185,9 @@ void Game::Run() {
       enemyClock.restart();
     }
     if (attackClock.getElapsedTime().asSeconds() >= attackDelay) {
-      for (Enemy* enemy : enemies) {
+      for (const auto& enemy : enemies) {
         if (enemy->IsAlive()) {
-          enemy->Attack(&player);
+          enemy->Attack(player);
         }
       }
       attackClock.restart();
@@ -250,27 +250,27 @@ void Game::loadEnemiesFromFile(const std::string& filename) {
       if (code == static_cast<int>(ActiveType::DogX) ||
           code == static_cast<int>(ActiveType::DogY)) {
         bool moveX = (code == static_cast<int>(ActiveType::DogX));
-        enemies.push_back(new Dog(
+        enemies.push_back(std::make_unique<Dog>(
             spawnX, spawnY, static_cast<int>(enemies.size()), moveX, cellSize));
         map.enemies.push_back(sf::Vector2f(spawnX, spawnY));
       } else if (code == static_cast<int>(ActiveType::SceletonX) ||
                  code == static_cast<int>(ActiveType::SceletonY)) {
         bool moveX = (code == static_cast<int>(ActiveType::SceletonX));
-        enemies.push_back(new Sceleton(
+        enemies.push_back(std::make_unique<Sceleton>(
             spawnX, spawnY, static_cast<int>(enemies.size()), moveX, cellSize));
         map.enemies.push_back(sf::Vector2f(spawnX, spawnY));
       } else if (code == static_cast<int>(ActiveType::Chest_first)) {
-        chests.push_back(new Item(spawnX, spawnY,
-                                  static_cast<int>(ActiveType::Chest_first)));
+        chests.push_back(std::make_unique<Item>(
+            spawnX, spawnY, static_cast<int>(ActiveType::Chest_first)));
       } else if (code == static_cast<int>(ActiveType::Chest_Second)) {
-        chests.push_back(new Item(spawnX, spawnY,
-                                  static_cast<int>(ActiveType::Chest_Second)));
+        chests.push_back(std::make_unique<Item>(
+            spawnX, spawnY, static_cast<int>(ActiveType::Chest_Second)));
       } else if (code == static_cast<int>(ActiveType::Final_Chest)) {
-        chests.push_back(new Item(spawnX, spawnY,
-                                  static_cast<int>(ActiveType::Final_Chest)));
+        chests.push_back(std::make_unique<Item>(
+            spawnX, spawnY, static_cast<int>(ActiveType::Final_Chest)));
       } else if (code == static_cast<int>(ActiveType::key)) {
-        kyes.push_back(
-            new Item(spawnX, spawnY, static_cast<int>(ActiveType::key)));
+        kyes.push_back(std::make_unique<Item>(
+            spawnX, spawnY, static_cast<int>(ActiveType::key)));
         allkyes++;
       }
       col++;
@@ -396,7 +396,7 @@ void Game::drawUI(sf::RenderWindow& window, sf::View view, int hp) {
   window.setView(view);
 }
 void Game::isPlayerOnChest() {
-  for (Item* item : chests) {
+  for (const auto& item : chests) {
     if (item->active && item->getPosition() == player.getPosition()) {
       if (item->GetType() == static_cast<int>(ActiveType::Chest_first)) {
         player.EnableShooting();
@@ -416,7 +416,7 @@ void Game::isPlayerOnChest() {
   }
 }
 void Game::isPlayerOnKey() {
-  for (Item* item : kyes) {
+  for (const auto& item : kyes) {
     if (item->active && item->getPosition() == player.getPosition()) {
       player.CollectKey();
 

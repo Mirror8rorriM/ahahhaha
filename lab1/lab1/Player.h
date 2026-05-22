@@ -24,7 +24,7 @@ class Player : public Creature {
  public:
   Player(int x, int y, int cellSize);
   int turn = static_cast<int>(Turn::down);
-  void Attack(Creature* creature) override;
+  void Attack(Creature& creature) override;
   void Draw(sf::RenderWindow& window, int cellSize);
   void Heal(int amount);
   void TakeDmg(int dmg_to_take) override;

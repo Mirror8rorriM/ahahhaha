@@ -1,5 +1,6 @@
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -12,9 +13,9 @@ class Game {
  private:
   Map map;
   Player player;
-  std::vector<Enemy*> enemies;
-  std::vector<Item*> chests;
-  std::vector<Item*> kyes;
+  std::vector<std::unique_ptr<Enemy>> enemies;
+  std::vector<std::unique_ptr<Item>> chests;
+  std::vector<std::unique_ptr<Item>> kyes;
   sf::Clock shootClock;
   sf::Clock teleportTimer;
   int shootTurn;
@@ -30,7 +31,7 @@ class Game {
   sf::Texture chestTexture;
   sf::Sprite keySprite;
   sf::Texture keyTexture;
-  void PlayerMovement(sf::Event& event, int* shootDistance);
+  void PlayerMovement(sf::Event& event, int& shootDistance);
   void PlayerMove(sf::Event& event);
   int PlayerShoot(sf::Event& event);
   void PlayerTp(sf::Event& event);

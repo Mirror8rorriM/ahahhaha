@@ -1,6 +1,7 @@
 #include "Enemy.h"
 
 #include <cmath>
+#include <typeinfo>
 
 Enemy::Enemy(int x, int y, int id, bool move_x) : Creature(x, y) {
   this->id = id;
@@ -13,10 +14,10 @@ Enemy::Enemy(int x, int y, int id, bool move_x) : Creature(x, y) {
 
 void Enemy::Ai(Map& map, Player& player) {
   // передаЄм игрока Ч Move проверит столкновение
-  Move(map, &player);
+  Move(map, player);
 }
 
-void Enemy::Move(Map& map, const Player* player) {
+void Enemy::Move(Map& map, Player& player) {
   sf::Vector2f nextPos = {x_pos, y_pos};
   if (move_x)
     nextPos.x += move_pos;
@@ -25,13 +26,13 @@ void Enemy::Move(Map& map, const Player* player) {
 
   int nx = static_cast<int>(std::floor(nextPos.x));
   int ny = static_cast<int>(std::floor(nextPos.y));
-  int px = player ? static_cast<int>(std::floor(player->x_pos)) : INT_MIN;
-  int py = player ? static_cast<int>(std::floor(player->y_pos)) : INT_MIN;
+  int px = static_cast<int>(std::floor(player.x_pos));
+  int py = static_cast<int>(std::floor(player.y_pos));
 
   // если целева€ клетка Ч игрок, атакуем только если истЄк таймер
-  if (player && nx == px && ny == py) {
+  if (nx == px && ny == py) {
     if (attackTimer.getElapsedTime().asSeconds() >= attack_speed) {
-      Attack(const_cast<Player*>(player));
+      Attack(player);
       attackTimer.restart();
     }
     return;
@@ -48,19 +49,21 @@ void Enemy::Move(Map& map, const Player* player) {
   }
 }
 
-void Enemy::Attack(Creature* creature) {
-  Player* creat = dynamic_cast<Player*>(creature);
-  if (!creat) return;
+void Enemy::Attack(Creature& creature) {
+  try {
+    Player& player = dynamic_cast<Player&>(creature);
+    float dx = player.x_pos - x_pos;
+    float dy = player.y_pos - y_pos;
+    float distance = std::hypot(dx, dy);
 
-  float dx = creat->x_pos - x_pos;
-  float dy = creat->y_pos - y_pos;
-  float distance = std::hypot(dx, dy);
-
-  if (distance <= static_cast<float>(attack_range)) {
-    if (attackTimer.getElapsedTime().asSeconds() >= attack_speed) {
-      creature->TakeDmg(dmg);
-      attackTimer.restart();
+    if (distance <= static_cast<float>(attack_range)) {
+      if (attackTimer.getElapsedTime().asSeconds() >= attack_speed) {
+        player.TakeDmg(dmg);
+        attackTimer.restart();
+      }
     }
+  } catch (const std::bad_cast&) {
+    return;
   }
 }
 
@@ -116,7 +119,7 @@ void Dog::Folowing(Player& player, Map& map) {
 
   if (nx == px && ny == py) {
     if (attackTimer.getElapsedTime().asSeconds() >= attack_speed) {
-      Attack(&player);
+      Attack(player);
       attackTimer.restart();
     }
     return;
@@ -137,7 +140,7 @@ void Dog::Ai(Map& map, Player& player) {
   if (std::abs(diffX) <= follow_range || std::abs(diffY) <= follow_range) {
     Folowing(player, map);
   } else {
-    Move(map, &player);
+    Move(map, player);
   }
 }
 
@@ -177,7 +180,7 @@ Sceleton::Sceleton(int x, int y, int id, bool move_x, int cellSize)
   attackTimer.restart();
 }
 
-void Sceleton::Ai(Map& map, Player& player) { Move(map, &player); }
+void Sceleton::Ai(Map& map, Player& player) { Move(map, player); }
 
 void Sceleton::Draw(sf::RenderWindow& window, int cellSize) const {
   sf::Sprite sprite;

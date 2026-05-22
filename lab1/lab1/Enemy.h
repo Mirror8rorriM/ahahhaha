@@ -25,8 +25,8 @@ class Enemy : public Creature {
  public:
   Enemy(int x, int y, int id, bool move_x);
   virtual void Ai(Map& map, Player& player);
-  void Move(Map& map, const Player* player = nullptr);
-  void Attack(Creature* creature) override;
+  void Move(Map& map, Player& player);
+  void Attack(Creature& creature) override;
 
   virtual void Draw(sf::RenderWindow& window, int cellSize) const;
   virtual ~Enemy() = default;
