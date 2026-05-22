@@ -9,7 +9,6 @@ void Creature::TakeDmg(int dmg_to_take) {
 }
 
 Creature::Creature(int x, int y) {
-  // дефолтные значения; наследники могут переопределять hp/dmg
   this->hp = 10;
   this->dmg = 1;
   x_pos = static_cast<float>(x);

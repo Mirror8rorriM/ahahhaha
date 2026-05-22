@@ -2,7 +2,7 @@
 #include "Player.h"
 
 Player::Player(int x, int y, int cellSize)
-    : Creature(x, y)  // hp=100, dmg=6
+    : Creature(x, y)  
 {
   if (playerTexture.loadFromFile("player.png")) {
     playerSprite.setTexture(playerTexture);
@@ -48,4 +48,4 @@ void Player::Draw(sf::RenderWindow& window, int cellSize) {
   window.draw(sprite);
 }
 
-void Player::Heal(int amount) { hp += amount; }
+void Player::Heal(int amount) { hp = std::min(hp + amount, 100); }

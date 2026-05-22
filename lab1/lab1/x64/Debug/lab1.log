@@ -1,4 +1,20 @@
-﻿  Enemy.cpp
+﻿  Creature.cpp
+  Enemy.cpp
+  EntityFactory.cpp
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244:         with
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244:         [
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244:             T=float
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244:         ]
+  (компиляция исходного файла "EntityFactory.cpp")
+  
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,58): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,58): warning C4244:         with
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,58): warning C4244:         [
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,58): warning C4244:             T=float
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,58): warning C4244:         ]
+  (компиляция исходного файла "EntityFactory.cpp")
+  
   Game.cpp
 C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
 C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244:         with
@@ -14,40 +30,34 @@ C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,58): warning C4244:
 C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,58): warning C4244:         ]
   (компиляция исходного файла "Game.cpp")
   
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,50): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,50): warning C4244:         with
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,50): warning C4244:         [
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,50): warning C4244:             T=float
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,50): warning C4244:         ]
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,37): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,37): warning C4244:         with
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,37): warning C4244:         [
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,37): warning C4244:             T=float
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(162,37): warning C4244:         ]
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,52): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,52): warning C4244:         with
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,52): warning C4244:         [
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,52): warning C4244:             T=float
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,52): warning C4244:         ]
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,44): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,44): warning C4244:         with
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,44): warning C4244:         [
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,44): warning C4244:             T=float
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(255,44): warning C4244:         ]
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,52): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,52): warning C4244:         with
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,52): warning C4244:         [
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,52): warning C4244:             T=float
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,52): warning C4244:         ]
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,44): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,44): warning C4244:         with
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,44): warning C4244:         [
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,44): warning C4244:             T=float
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(261,44): warning C4244:         ]
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(435,32): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(437,31): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(439,32): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(441,31): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,50): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,50): warning C4244:         with
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,50): warning C4244:         [
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,50): warning C4244:             T=float
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,50): warning C4244:         ]
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,37): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,37): warning C4244:         with
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,37): warning C4244:         [
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,37): warning C4244:             T=float
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(184,37): warning C4244:         ]
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,52): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,52): warning C4244:         with
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,52): warning C4244:         [
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,52): warning C4244:             T=float
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,52): warning C4244:         ]
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,44): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,44): warning C4244:         with
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,44): warning C4244:         [
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,44): warning C4244:             T=float
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(277,44): warning C4244:         ]
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(490,32): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(492,31): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(494,32): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Game.cpp(496,31): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+  Map.cpp
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Map.cpp(52,17): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Map.cpp(53,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  Player.cpp
   lab1.cpp
 C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244: аргумент: преобразование "const int" в "T", возможна потеря данных
 C:\Users\user1\OneDrive\Desktop\ahahhaha\lab1\lab1\Item.h(12,65): warning C4244:         with

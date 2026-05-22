@@ -1,18 +1,10 @@
-
+п»ї
 #include "Game.h"
 
+#include <cctype>
 #include <fstream>
 #include <iostream>
-enum class ActiveType {
-  DogX = 2,
-  DogY,
-  SceletonX,
-  SceletonY,
-  Chest_first,
-  Chest_Second,
-  Final_Chest,
-  key
-};
+#include <sstream>
 
 Game::Game() : map("map.txt", 30), player(1, 1, cellSize) {
   cellSize = static_cast<int>(map.getCellSize());
@@ -32,6 +24,24 @@ Game::Game() : map("map.txt", 30), player(1, 1, cellSize) {
     if (texW > 0.0f && texH > 0.0f) {
       keySprite.setScale(static_cast<float>(cellSize) / texW,
                          static_cast<float>(cellSize) / texH);
+    }
+  }
+  if (healTexture.loadFromFile("heal.png")) {
+    healSprite.setTexture(healTexture);
+    float texW = static_cast<float>(healTexture.getSize().x);
+    float texH = static_cast<float>(healTexture.getSize().y);
+    if (texW > 0.0f && texH > 0.0f) {
+      healSprite.setScale(static_cast<float>(cellSize) / texW,
+                          static_cast<float>(cellSize) / texH);
+    }
+  }
+  if (trapTexture.loadFromFile("trap.png")) {
+    trapSprite.setTexture(trapTexture);
+    float texW = static_cast<float>(trapTexture.getSize().x);
+    float texH = static_cast<float>(trapTexture.getSize().y);
+    if (texW > 0.0f && texH > 0.0f) {
+      trapSprite.setScale(static_cast<float>(cellSize) / texW,
+                          static_cast<float>(cellSize) / texH);
     }
   }
 }
@@ -147,6 +157,18 @@ void Game::PlayerTp(sf::Event& event) {
 }
 void Game::PlayerMovement(sf::Event& event, int& shootDistance) {
   if (event.type == sf::Event::KeyPressed) {
+    if (inTrap) {
+      if (event.key.code == sf::Keyboard::Space) {
+        trapPressesLeft--;
+
+        if (trapPressesLeft <= 0) {
+          inTrap = false;
+          trapPressesLeft = trapPresses;
+        }
+      }
+
+      return;
+    }
     PlayerMove(event);
     shootDistance = PlayerShoot(event);
     PlayerTp(event);
@@ -159,11 +181,11 @@ void Game::Run() {
   window.setFramerateLimit(60);
 
   loadEnemiesFromFile("map.txt");
-  sf::View view(sf::FloatRect(0, 0, windowWidth, windowHeight));  // camera
+  sf::View view(sf::FloatRect(0, 0, windowWidth, windowHeight));
 
   sf::Clock enemyClock;
   sf::Clock attackClock;
-  const float moveDelay = 0.5f;
+  float moveDelay = 0.5f;
   const float attackDelay = 1.0f;
   int shootDistance = 0;
   while (window.isOpen()) {
@@ -176,6 +198,7 @@ void Game::Run() {
 
       PlayerMovement(event, shootDistance);
     }
+    moveDelay = std::max(0.15f, 0.5f - player.GetKeysCollected() * 0.08f);
     if (enemyClock.getElapsedTime().asSeconds() >= moveDelay) {
       for (const auto& enemy : enemies) {
         if (enemy->IsAlive()) {
@@ -201,27 +224,24 @@ void Game::Run() {
       BigText("Game Over", sf::Color::Red);
     }
     isPlayerOnChest();
-    isPlayerOnKey();
+    isPlayerOnItem();
     view.setCenter(player.getPosition().x * cellSize + cellSize / 2.f,
                    player.getPosition().y * cellSize + cellSize / 2.f);
     window.setView(view);
 
     window.clear();
 
-    // 1. Сначала рисуем фон и карту (они в самом низу)
     DrawGrid(window, view);
-    map.draw(window);  // Карта нарисует пол и стены
+    map.draw(window);
 
-    // 2. Затем рисуем объекты, которые стоят на полу
     DrawChests(window);
-    DrawKeys(window);   // Ключи
-    DrawEnemy(window);  // Враги
+    DrawItems(window);
+    DrawEnemy(window);
     player.Draw(window, cellSize);
     if (shootClock.getElapsedTime().asSeconds() <= timeShootDrowing) {
       DrawShoot(window, shootDistance);
     }
 
-    // 3. В самом конце — интерфейс (всегда поверх всего)
     drawUI(window, view, player.GetHp());
 
     window.display();
@@ -230,7 +250,7 @@ void Game::Run() {
 
 void Game::DrawEnemy(sf::RenderWindow& window) {
   for (const auto& e : enemies) {
-    if (e) e->Draw(window, cellSize);  // каждый враг рисует себя
+    if (e) e->Draw(window, cellSize);
   }
 }
 
@@ -238,50 +258,52 @@ void Game::loadEnemiesFromFile(const std::string& filename) {
   std::ifstream file(filename);
   std::string line;
   int row = 0;
+
   while (std::getline(file, line)) {
+    std::stringstream ss(line);
+
+    int code;
     int col = 0;
-    for (char c : line) {
-      int code = c - '0';
-      // в файле: строка = row (y), символ = col (x)
-      // Map::loadFromFile добавляет рамку +1, поэтому смещаем
+
+    while (ss >> code) {
       int spawnX = col + 1;
       int spawnY = row + 1;
 
-      if (code == static_cast<int>(ActiveType::DogX) ||
-          code == static_cast<int>(ActiveType::DogY)) {
-        bool moveX = (code == static_cast<int>(ActiveType::DogX));
-        enemies.push_back(std::make_unique<Dog>(
-            spawnX, spawnY, static_cast<int>(enemies.size()), moveX, cellSize));
+      std::unique_ptr<Enemy> enemy = entityFactory.CreateEnemy(
+          code, spawnX, spawnY, static_cast<int>(enemies.size()), cellSize);
+
+      if (enemy) {
+        enemies.push_back(std::move(enemy));
         map.enemies.push_back(sf::Vector2f(spawnX, spawnY));
-      } else if (code == static_cast<int>(ActiveType::SceletonX) ||
-                 code == static_cast<int>(ActiveType::SceletonY)) {
-        bool moveX = (code == static_cast<int>(ActiveType::SceletonX));
-        enemies.push_back(std::make_unique<Sceleton>(
-            spawnX, spawnY, static_cast<int>(enemies.size()), moveX, cellSize));
-        map.enemies.push_back(sf::Vector2f(spawnX, spawnY));
-      } else if (code == static_cast<int>(ActiveType::Chest_first)) {
-        chests.push_back(std::make_unique<Item>(
-            spawnX, spawnY, static_cast<int>(ActiveType::Chest_first)));
-      } else if (code == static_cast<int>(ActiveType::Chest_Second)) {
-        chests.push_back(std::make_unique<Item>(
-            spawnX, spawnY, static_cast<int>(ActiveType::Chest_Second)));
-      } else if (code == static_cast<int>(ActiveType::Final_Chest)) {
-        chests.push_back(std::make_unique<Item>(
-            spawnX, spawnY, static_cast<int>(ActiveType::Final_Chest)));
-      } else if (code == static_cast<int>(ActiveType::key)) {
-        kyes.push_back(std::make_unique<Item>(
-            spawnX, spawnY, static_cast<int>(ActiveType::key)));
-        allkyes++;
+      } else {
+        std::unique_ptr<Item> item =
+            entityFactory.CreateItem(code, spawnX, spawnY);
+
+        if (item) {
+          if (item->GetType() == static_cast<int>(MapEntityType::Key) ||
+              item->GetType() == static_cast<int>(MapEntityType::Heal) ||
+              item->GetType() == static_cast<int>(MapEntityType::Trap)) {
+            items.push_back(std::move(item));
+
+            if (code == static_cast<int>(MapEntityType::Key)) allkyes++;
+
+          } else {
+            chests.push_back(std::move(item));
+          }
+        }
       }
+
       col++;
     }
+
     row++;
   }
+
   file.close();
 }
 void Game::DrawGrid(sf::RenderWindow& window, const sf::View& view) {
   sf::Vector2f viewCenter = view.getCenter();
-  // Границы видимой области в пикселях
+
   int startX =
       static_cast<int>(viewCenter.x - windowWidth / 2) / cellSize * cellSize -
       cellSize;
@@ -307,20 +329,31 @@ void Game::DrawChests(sf::RenderWindow& window) {
 
   for (const auto& c : chests) {
     if (c && c->active) {
-      sf::Vector2f pos = c->getPosition();  // клеточные координаты
+      sf::Vector2f pos = c->getPosition();
       sprite.setPosition(pos.x * cellSize, pos.y * cellSize);
       window.draw(sprite);
     }
   }
 }
-void Game::DrawKeys(sf::RenderWindow& window) {
-  sf::Sprite sprite = keySprite;
-
-  for (const auto& k : kyes) {
+void Game::DrawItems(sf::RenderWindow& window) {
+  sf::Sprite key_sprite = keySprite;
+  sf::Sprite heal_sprite = healSprite;
+  sf::Sprite trap_sprite = trapSprite;
+  for (const auto& k : items) {
     if (k && k->active) {
-      sf::Vector2f pos = k->getPosition();  // клеточные координаты
-      sprite.setPosition(pos.x * cellSize, pos.y * cellSize);
-      window.draw(sprite);
+      if (k->GetType() == static_cast<int>(MapEntityType::Key)) {
+        sf::Vector2f pos = k->getPosition();
+        key_sprite.setPosition(pos.x * cellSize, pos.y * cellSize);
+        window.draw(key_sprite);
+      } else if (k->GetType() == static_cast<int>(MapEntityType::Heal)) {
+        sf::Vector2f pos = k->getPosition();
+        heal_sprite.setPosition(pos.x * cellSize, pos.y * cellSize);
+        window.draw(heal_sprite);
+      } else if (k->GetType() == static_cast<int>(MapEntityType::Trap)) {
+        sf::Vector2f pos = k->getPosition();
+        trap_sprite.setPosition(pos.x * cellSize, pos.y * cellSize);
+        window.draw(trap_sprite);
+      }
     }
   }
 }
@@ -393,21 +426,35 @@ void Game::drawUI(sf::RenderWindow& window, sf::View view, int hp) {
     teleportText.setPosition(x, y);
     window.draw(teleportText);
   }
+  if (inTrap) {
+    sf::Text trapText;
+    trapText.setFont(font);
+    trapText.setString("PRESS SPACE: " + std::to_string(trapPressesLeft));
+    trapText.setCharacterSize(40);
+    trapText.setFillColor(sf::Color::Red);
+    trapText.setStyle(sf::Text::Bold);
+    sf::FloatRect bounds = trapText.getLocalBounds();
+    trapText.setPosition(window.getSize().x / 2.f - bounds.width / 2.f,
+                         window.getSize().y / 2.f - bounds.height / 2.f);
+
+    window.draw(trapText);
+  }
   window.setView(view);
 }
 void Game::isPlayerOnChest() {
   for (const auto& item : chests) {
     if (item->active && item->getPosition() == player.getPosition()) {
-      if (item->GetType() == static_cast<int>(ActiveType::Chest_first)) {
+      if (item->GetType() == static_cast<int>(MapEntityType::FirstChest)) {
         player.EnableShooting();
         item->active = false;
 
       } else if (item->GetType() ==
-                 static_cast<int>(ActiveType::Chest_Second)) {
+                 static_cast<int>(MapEntityType::SecondChest)) {
         player.EnableTeleportation();
         item->active = false;
 
-      } else if (item->GetType() == static_cast<int>(ActiveType::Final_Chest) &&
+      } else if (item->GetType() ==
+                     static_cast<int>(MapEntityType::FinalChest) &&
                  allkyes <= player.GetKeysCollected()) {
         win = true;
         item->active = false;
@@ -415,10 +462,18 @@ void Game::isPlayerOnChest() {
     }
   }
 }
-void Game::isPlayerOnKey() {
-  for (const auto& item : kyes) {
+void Game::isPlayerOnItem() {
+  for (const auto& item : items) {
     if (item->active && item->getPosition() == player.getPosition()) {
-      player.CollectKey();
+      if (item->GetType() == static_cast<int>(MapEntityType::Heal)) {
+        player.Heal(20);
+        item->active = false;
+      } else if (item->GetType() == static_cast<int>(MapEntityType::Key)) {
+        player.CollectKey();
+      } else if (item->GetType() == static_cast<int>(MapEntityType::Trap)) {
+        inTrap = true;
+        trapPressesLeft = trapPresses;
+      }
 
       item->active = false;
     }
@@ -459,7 +514,7 @@ void Game::BigText(std::string str, sf::Color color) {
   text.setCharacterSize(80);
   text.setFillColor(color);
   text.setStyle(sf::Text::Bold);
-  /*text.setColor(sf::Color::Red);*/
+
   sf::FloatRect textRect = text.getLocalBounds();
   text.setOrigin(textRect.left + textRect.width / 2.0f,
                  textRect.top + textRect.height / 2.0f);
@@ -475,9 +530,7 @@ void Game::BigText(std::string str, sf::Color color) {
         window.close();
     }
 
-    window.clear(sf::Color(20, 20, 20));  // Темный фон
-
-    // Рисуем сначала тень, потом текст
+    window.clear(sf::Color(20, 20, 20));
 
     window.draw(text);
 

@@ -17,9 +17,9 @@ class Map {
   Map(std::string filename, int size);
   void loadFromFile(std::string filename);
   bool isWall(float x, float y) const;
-  void draw(sf::RenderWindow& window);  // актуальная сигнатура
+  void draw(sf::RenderWindow& window); 
   bool isEnemyAt(float x, float y) const;
   float getCellSize() const {
     return static_cast<float>(cellSize);
-  }  // inline определение
+  }  
 };

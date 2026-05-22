@@ -17,10 +17,10 @@ class Enemy : public Creature {
   sf::Texture enemyTexture;
   sf::Sprite deadEnemySprite;
   sf::Texture deadEnemyTexture;
-  const float attack_speed = 0.5f;  // секунды между атаками
-  const int attack_range = 1;
-
-  sf::Clock attackTimer;  // отдельный таймер для атак этого врага
+  const float attack_speed = 0.5f;
+  const int attackRange = 1;
+  virtual int getAttackRange() const;
+  sf::Clock attackTimer;
 
  public:
   Enemy(int x, int y, int id, bool move_x);
@@ -35,6 +35,7 @@ class Enemy : public Creature {
 class Dog : public Enemy {
  private:
   const int follow_range = 5;
+  const int attack_range = 1;
 
  public:
   Dog(int x, int y, int id, bool move_x, int cellSize);
@@ -44,8 +45,8 @@ class Dog : public Enemy {
 };
 
 class Sceleton : public Enemy {
-  const int attack_range = 2;
-  
+  const int attackRange = 2;
+  int getAttackRange() const;
 
  public:
   Sceleton(int x, int y, int id, bool move_x, int cellSize);

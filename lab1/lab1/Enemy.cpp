@@ -11,7 +11,7 @@ Enemy::Enemy(int x, int y, int id, bool move_x) : Creature(x, y) {
   this->dmg = 1;
   attackTimer.restart();  // стартируем таймер
 }
-
+int Enemy::getAttackRange() const { return attackRange; }
 void Enemy::Ai(Map& map, Player& player) {
   // передаЄм игрока Ч Move проверит столкновение
   Move(map, player);
@@ -29,7 +29,6 @@ void Enemy::Move(Map& map, Player& player) {
   int px = static_cast<int>(std::floor(player.x_pos));
   int py = static_cast<int>(std::floor(player.y_pos));
 
-  // если целева€ клетка Ч игрок, атакуем только если истЄк таймер
   if (nx == px && ny == py) {
     if (attackTimer.getElapsedTime().asSeconds() >= attack_speed) {
       Attack(player);
@@ -56,7 +55,7 @@ void Enemy::Attack(Creature& creature) {
     float dy = player.y_pos - y_pos;
     float distance = std::hypot(dx, dy);
 
-    if (distance <= static_cast<float>(attack_range)) {
+    if (distance <= static_cast<float>(getAttackRange())) {
       if (attackTimer.getElapsedTime().asSeconds() >= attack_speed) {
         player.TakeDmg(dmg);
         attackTimer.restart();
@@ -67,7 +66,6 @@ void Enemy::Attack(Creature& creature) {
   }
 }
 
-// Ѕазова€ отрисовка (виртуальна€)
 void Enemy::Draw(sf::RenderWindow& window, int cellSize) const {
   sf::RectangleShape shape(sf::Vector2f(static_cast<float>(cellSize - 1),
                                         static_cast<float>(cellSize - 1)));
@@ -76,7 +74,6 @@ void Enemy::Draw(sf::RenderWindow& window, int cellSize) const {
   window.draw(shape);
 }
 
-// Dog
 Dog::Dog(int x, int y, int id, bool move_x, int cellSize)
     : Enemy(x, y, id, move_x) {
   if (enemyTexture.loadFromFile("dog.png")) {
@@ -154,7 +151,6 @@ void Dog::Draw(sf::RenderWindow& window, int cellSize) const {
   window.draw(sprite);
 }
 
-// Sceleton
 Sceleton::Sceleton(int x, int y, int id, bool move_x, int cellSize)
     : Enemy(x, y, id, move_x) {
   if (enemyTexture.loadFromFile("sceleton.png")) {
@@ -191,3 +187,4 @@ void Sceleton::Draw(sf::RenderWindow& window, int cellSize) const {
   sprite.setPosition(x_pos * cellSize, y_pos * cellSize);
   window.draw(sprite);
 }
+int Sceleton::getAttackRange() const { return attackRange; };

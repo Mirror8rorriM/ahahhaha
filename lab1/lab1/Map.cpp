@@ -1,4 +1,8 @@
 #include "Map.h"
+
+#include <cctype>
+#include <iostream>
+#include <sstream>
 bool Map::isEnemyAt(float x, float y) const {
   int gx = static_cast<int>(std::floor(x));
   int gy = static_cast<int>(std::floor(y));
@@ -28,24 +32,31 @@ void Map::loadFromFile(std::string filename) {
   std::ifstream file(filename);
   std::vector<std::vector<int>> tempGrid;
   std::string line;
+
   while (std::getline(file, line)) {
     std::vector<int> row;
-    for (char c : line) {
-      row.push_back(c - '0');
+    std::stringstream ss(line);
+
+    int number;
+    while (ss >> number) {
+      row.push_back(number);
     }
+
     if (!row.empty()) tempGrid.push_back(row);
   }
+
   file.close();
 
   if (tempGrid.empty()) return;
 
-  // Окружаем карту стенами
   int mapHeight = tempGrid.size();
   int mapWidth = tempGrid[0].size();
+  for (std::vector<int> i : tempGrid) {
+    int mapWidth = std::max(static_cast<int>(i.size()), mapWidth);
+  }
 
   grid.assign(mapHeight + 2, std::vector<int>(mapWidth + 2, 1));
 
-  // Копируем данные из файла в центр новой сетки
   for (int i = 0; i < mapHeight; ++i) {
     for (int j = 0; j < mapWidth; ++j) {
       grid[i + 1][j + 1] = tempGrid[i][j];
@@ -64,7 +75,6 @@ bool Map::isWall(float x, float y) const {
 }
 
 void Map::draw(sf::RenderWindow& window) {
-  // Отрисовываем все стены (все клетки == 1)
   for (int row = 0; row < static_cast<int>(grid.size()); ++row) {
     for (int col = 0; col < static_cast<int>(grid[row].size()); ++col) {
       if (grid[row][col] == 1) {
