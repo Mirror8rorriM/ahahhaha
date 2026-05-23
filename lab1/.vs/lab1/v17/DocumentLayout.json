@@ -83,8 +83,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAD0AAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2026-04-24T16:56:08.71Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -97,8 +96,7 @@
               "ViewState": "AgIAAOQBAAAAAAAAAAASwBYCAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2026-04-24T16:57:41.829Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -114,8 +112,7 @@
               "RelativeToolTip": "lab1\\EntityFactory.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2026-05-22T20:02:42.191Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-22T20:02:42.191Z"
             },
             {
               "$type": "Document",
@@ -127,8 +124,7 @@
               "RelativeToolTip": "lab1\\Creature.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2026-04-24T08:43:00.741Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T08:43:00.741Z"
             },
             {
               "$type": "Document",
@@ -140,8 +136,7 @@
               "RelativeToolTip": "lab1\\Map.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-04-24T11:21:57.981Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T11:21:57.981Z"
             },
             {
               "$type": "Document",
@@ -149,12 +144,11 @@
               "Title": "Map.h",
               "DocumentMoniker": "C:\\Users\\user1\\OneDrive\\Desktop\\ahahhaha\\lab1\\lab1\\Map.h",
               "RelativeDocumentMoniker": "lab1\\Map.h",
-              "ToolTip": "C:\\Users\\user1\\OneDrive\\Desktop\\ahahhaha\\lab1\\lab1\\Map.h*",
-              "RelativeToolTip": "lab1\\Map.h*",
+              "ToolTip": "C:\\Users\\user1\\OneDrive\\Desktop\\ahahhaha\\lab1\\lab1\\Map.h",
+              "RelativeToolTip": "lab1\\Map.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2026-04-24T11:18:06.28Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T11:18:06.28Z"
             },
             {
               "$type": "Document",
@@ -166,8 +160,7 @@
               "RelativeToolTip": "lab1\\Item.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2026-04-24T16:57:20.556Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T16:57:20.556Z"
             },
             {
               "$type": "Document",
@@ -179,8 +172,7 @@
               "RelativeToolTip": "lab1\\Item.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-04-24T16:57:40.941Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T16:57:40.941Z"
             },
             {
               "$type": "Document",
@@ -205,8 +197,7 @@
               "RelativeToolTip": "lab1\\EntityFactory.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-05-22T19:57:19.261Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-22T19:57:19.261Z"
             },
             {
               "$type": "Document",
@@ -214,12 +205,11 @@
               "Title": "Player.cpp",
               "DocumentMoniker": "C:\\Users\\user1\\OneDrive\\Desktop\\ahahhaha\\lab1\\lab1\\Player.cpp",
               "RelativeDocumentMoniker": "lab1\\Player.cpp",
-              "ToolTip": "C:\\Users\\user1\\OneDrive\\Desktop\\ahahhaha\\lab1\\lab1\\Player.cpp*",
-              "RelativeToolTip": "lab1\\Player.cpp*",
+              "ToolTip": "C:\\Users\\user1\\OneDrive\\Desktop\\ahahhaha\\lab1\\lab1\\Player.cpp",
+              "RelativeToolTip": "lab1\\Player.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-04-24T10:58:45.88Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T10:58:45.88Z"
             },
             {
               "$type": "Document",
@@ -231,8 +221,7 @@
               "RelativeToolTip": "lab1\\Player.h",
               "ViewState": "AgIAABgAAAAAAAAAAAAAAAoAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2026-04-24T09:20:03.69Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T09:20:03.69Z"
             },
             {
               "$type": "Document",
@@ -244,8 +233,7 @@
               "RelativeToolTip": "lab1\\lab1.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-04-23T15:34:55.62Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-23T15:34:55.62Z"
             },
             {
               "$type": "Document",
@@ -257,8 +245,7 @@
               "RelativeToolTip": "lab1\\Enemy.cpp",
               "ViewState": "AgIAAKIAAAAAAAAAAAApwJkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-04-24T09:39:07.867Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T09:39:07.867Z"
             },
             {
               "$type": "Document",
@@ -270,8 +257,7 @@
               "RelativeToolTip": "lab1\\Creature.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-04-24T08:58:21.256Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-24T08:58:21.256Z"
             }
           ]
         }
