@@ -55,5 +55,20 @@ struct GameState {
     bool flag(const std::string& key) const;
     void setFlag(const std::string& key, bool value = true);
 };
+struct ItemUseRule {
+    std::string locationId;
+    std::string item;
+    std::vector<std::string> aliases;
+
+    std::vector<std::string> requiresFlags;
+    std::vector<std::string> requiresItems;
+
+    std::vector<std::string> removeItems;
+    std::vector<std::string> addItems;
+    std::vector<std::string> setFlags;
+
+    std::string message;
+    bool spendAction = true;
+};
 
 } // namespace efd

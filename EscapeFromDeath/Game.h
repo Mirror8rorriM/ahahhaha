@@ -47,6 +47,7 @@ private:
     void actionSearchLaundry();
     void actionSearchCafeteria();
     void actionSearchYard();
+    void actionUseInventoryItem();
 
     void spendAction();
     void nextDay(int days = 1);
