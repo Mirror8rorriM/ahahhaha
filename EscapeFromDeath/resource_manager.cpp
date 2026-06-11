@@ -11,6 +11,20 @@
 
 namespace efd {
 
+namespace {
+
+std::vector<std::string> jsonStringArray(const Json& object, const std::string& key) {
+    std::vector<std::string> values;
+    if (!object.contains(key)) return values;
+
+    for (const auto& value : object.at(key).asArray()) {
+        values.push_back(value.asString());
+    }
+    return values;
+}
+
+} // namespace
+
 ResourceManager::ResourceManager(std::string dataDirectory) : dataDirectory_(std::move(dataDirectory)) {}
 
 std::filesystem::path ResourceManager::path(const std::string& fileName) const {
@@ -22,6 +36,7 @@ void ResourceManager::loadAll() {
     loadEnemies();
     loadCombatPhrases();
     loadDialogues();
+    loadItemUseRules();
 }
 
 const std::map<std::string, LocationData>& ResourceManager::locations() const {
@@ -38,6 +53,10 @@ const std::vector<CombatPhrase>& ResourceManager::combatPhrases() const {
 
 const std::vector<DialogueEntry>& ResourceManager::dialogues() const {
     return dialogues_;
+}
+
+const std::vector<ItemUseRule>& ResourceManager::itemUseRules() const {
+    return itemUseRules_;
 }
 
 const LocationData& ResourceManager::location(const std::string& id) const {
@@ -144,6 +163,27 @@ void ResourceManager::loadDialogues() {
         }
     }
     if (hasHeader && !current.text.empty()) dialogues_.push_back(current);
+}
+
+
+void ResourceManager::loadItemUseRules() {
+    itemUseRules_.clear();
+    Json root = JsonParser::parseFile(path("item_uses.json").string());
+
+    for (const auto& item : root.at("uses").asArray()) {
+        ItemUseRule rule;
+        rule.locationId = item.at("locationId").asString();
+        rule.item = item.at("item").asString();
+        rule.aliases = jsonStringArray(item, "aliases");
+        rule.requiresFlags = jsonStringArray(item, "requiresFlags");
+        rule.requiresItems = jsonStringArray(item, "requiresItems");
+        rule.removeItems = jsonStringArray(item, "removeItems");
+        rule.addItems = jsonStringArray(item, "addItems");
+        rule.setFlags = jsonStringArray(item, "setFlags");
+        rule.message = item.at("message").asString();
+        rule.spendAction = item.contains("spendAction") ? item.at("spendAction").asBool(true) : true;
+        itemUseRules_.push_back(std::move(rule));
+    }
 }
 
 void ResourceManager::saveGame(const std::string& savePath, const GameState& state, const Hero& hero) const {
