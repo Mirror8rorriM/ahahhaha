@@ -101,4 +101,4 @@ bool CombatSystem::fight(Hero& hero, EnemyData enemyTemplate) {
     return false;
 }
 
-} // namespace efd
+} 

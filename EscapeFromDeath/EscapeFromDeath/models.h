@@ -1,11 +1,9 @@
 #pragma once
 
-#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
-#include <set>
 
 namespace efd {
 
@@ -51,26 +49,11 @@ struct GameState {
     std::set<std::string> inventory;
     std::map<std::string, bool> flags;
 
-    bool hasItem(const std::string& item) const {
-        return inventory.find(item) != inventory.end();
-    }
-
-    void addItem(const std::string& item) {
-        inventory.insert(item);
-    }
-
-    void removeItem(const std::string& item) {
-        inventory.erase(item);
-    }
-
-    bool flag(const std::string& key) const {
-        auto it = flags.find(key);
-        return it != flags.end() && it->second;
-    }
-
-    void setFlag(const std::string& key, bool value = true) {
-        flags[key] = value;
-    }
+    bool hasItem(const std::string& item) const;
+    void addItem(const std::string& item);
+    void removeItem(const std::string& item);
+    bool flag(const std::string& key) const;
+    void setFlag(const std::string& key, bool value = true);
 };
 
-} // namespace efd
+} 

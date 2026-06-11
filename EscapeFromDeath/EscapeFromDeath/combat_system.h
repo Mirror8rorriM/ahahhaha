@@ -13,7 +13,6 @@ class CombatSystem {
 public:
     explicit CombatSystem(std::vector<CombatPhrase> phrases);
 
-    // ¬озвращает true, если герой победил, false если проиграл.
     bool fight(Hero& hero, EnemyData enemyTemplate);
 
 private:
@@ -24,4 +23,4 @@ private:
     std::mt19937 rng_;
 };
 
-} // namespace efd
+} 

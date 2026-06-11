@@ -24,6 +24,22 @@ void ResourceManager::loadAll() {
     loadDialogues();
 }
 
+const std::map<std::string, LocationData>& ResourceManager::locations() const {
+    return locations_;
+}
+
+const std::map<std::string, EnemyData>& ResourceManager::enemies() const {
+    return enemies_;
+}
+
+const std::vector<CombatPhrase>& ResourceManager::combatPhrases() const {
+    return combatPhrases_;
+}
+
+const std::vector<DialogueEntry>& ResourceManager::dialogues() const {
+    return dialogues_;
+}
+
 const LocationData& ResourceManager::location(const std::string& id) const {
     auto it = locations_.find(id);
     if (it == locations_.end()) throw std::runtime_error("Unknown location: " + id);
@@ -193,4 +209,4 @@ bool ResourceManager::loadGame(const std::string& savePath, GameState& state, He
     return true;
 }
 
-} // namespace efd
+} 

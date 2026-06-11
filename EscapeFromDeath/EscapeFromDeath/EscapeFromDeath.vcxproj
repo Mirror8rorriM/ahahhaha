@@ -84,6 +84,10 @@
     <ClCompile Include="creatures.cpp" />
     <ClCompile Include="combat_system.cpp" />
     <ClCompile Include="resource_manager.cpp" />
+    <ClCompile Include="models.cpp" />
+    <ClCompile Include="json.cpp" />
+    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="console_encoding.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />

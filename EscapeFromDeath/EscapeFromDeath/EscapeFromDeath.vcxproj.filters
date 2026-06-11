@@ -13,6 +13,10 @@
     <ClCompile Include="creatures.cpp"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="combat_system.cpp"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="resource_manager.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="models.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="json.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="utils.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="console_encoding.cpp"><Filter>Source Files</Filter></ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h"><Filter>Header Files</Filter></ClInclude>

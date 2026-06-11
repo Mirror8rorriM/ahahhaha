@@ -9,6 +9,26 @@ Hero::Hero() {
     healFull();
 }
 
+int Hero::hp() const {
+    return hp_;
+}
+
+int Hero::strengthLevel() const {
+    return strengthLevel_;
+}
+
+int Hero::agilityLevel() const {
+    return agilityLevel_;
+}
+
+int Hero::enduranceLevel() const {
+    return enduranceLevel_;
+}
+
+bool Hero::isAlive() const {
+    return hp_ > 0;
+}
+
 int Hero::maxHp() const {
     switch (enduranceLevel_) {
         case 1: return 100;
@@ -71,4 +91,4 @@ std::string Hero::statsLine() const {
     return out.str();
 }
 
-} // namespace efd
+} 

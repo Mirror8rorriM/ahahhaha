@@ -7,13 +7,13 @@ namespace efd {
 
 class Enemy : public Creatures {
 public:
-    Enemy() = default;
+    Enemy();
     explicit Enemy(const EnemyData& data);
 
-    double timeScale() const { return timeScale_; }
+    double timeScale() const;
 
 private:
     double timeScale_ = 1.0;
 };
 
-} // namespace efd
+} 
