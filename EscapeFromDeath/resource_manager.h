@@ -43,4 +43,4 @@ private:
     std::vector<DialogueEntry> dialogues_;
 };
 
-} // namespace efd
+}

@@ -4,7 +4,7 @@
       "id": "cell",
       "name": "Камера",
       "description": "Сырая камера с узкой койкой. Здесь можно закончить день и дождаться следующего утра.",
-      "neighbors": ["shower", "cafeteria"]
+      "neighbors": ["shower", "cafeteria", "library"]
     },
     {
       "id": "shower",
@@ -16,7 +16,7 @@
       "id": "laundry",
       "name": "Прачечная",
       "description": "Горы белья, пар и старая техническая дверь. Похоже, это место может быть важным для побега.",
-      "neighbors": ["shower", "yard"]
+        "neighbors": ["shower", "yard", "gym"]
     },
     {
       "id": "yard",
@@ -34,7 +34,7 @@
       "id": "gym",
       "name": "Качалка",
       "description": "Несколько старых тренажёров. Раз в два дня можно прокачать одну характеристику.",
-      "neighbors": ["infirmary"]
+      "neighbors": ["infirmary", "laundry"]
     },
     {
       "id": "infirmary",
@@ -46,7 +46,7 @@
       "id": "library",
       "name": "Библиотека",
       "description": "Пыльные шкафы, старые планы здания и заключённый, который знает почти всех в тюрьме.",
-      "neighbors": ["infirmary"]
+      "neighbors": ["infirmary", "cell"]
     }
   ]
 }
