@@ -4,10 +4,8 @@
 
 #include <filesystem>
 #include <map>
-#include <optional>
 #include <string>
 #include <vector>
-#include <set>
 
 namespace efd {
 
@@ -19,10 +17,10 @@ public:
 
     void loadAll();
 
-    const std::map<std::string, LocationData>& locations() const { return locations_; }
-    const std::map<std::string, EnemyData>& enemies() const { return enemies_; }
-    const std::vector<CombatPhrase>& combatPhrases() const { return combatPhrases_; }
-    const std::vector<DialogueEntry>& dialogues() const { return dialogues_; }
+    const std::map<std::string, LocationData>& locations() const;
+    const std::map<std::string, EnemyData>& enemies() const;
+    const std::vector<CombatPhrase>& combatPhrases() const;
+    const std::vector<DialogueEntry>& dialogues() const;
 
     const LocationData& location(const std::string& id) const;
     const EnemyData& enemy(const std::string& id) const;

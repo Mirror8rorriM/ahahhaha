@@ -1,33 +1,15 @@
 #pragma once
 
-#include <clocale>
-#include <locale>
-
-#ifdef _WIN32
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#endif
+#include <string>
 
 namespace efd {
 
-inline void setupRussianConsole() {
-#ifdef _WIN32
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-#endif
+// Настраивает консоль и потоки так, чтобы UTF-8 строки из проекта
+// корректно отображались в Windows Terminal, cmd.exe, PowerShell и Linux/macOS терминалах.
+void setupRussianConsole();
 
-    if (std::setlocale(LC_ALL, ".1251") == nullptr) {
-        if (std::setlocale(LC_ALL, "Russian_Russia.1251") == nullptr) {
-            std::setlocale(LC_ALL, "rus");
-        }
-    }
-
-    try {
-        std::locale::global(std::locale(""));
-    } catch (...) {
-    }
-}
+// Читает строку ввода как UTF-8. На Windows-консоли читает UTF-16 через ReadConsoleW
+// и конвертирует в UTF-8, поэтому русский ввод работает независимо от системной кодовой страницы.
+bool readLineUtf8(std::string& line);
 
 } // namespace efd

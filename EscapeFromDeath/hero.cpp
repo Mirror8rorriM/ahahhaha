@@ -9,6 +9,26 @@ Hero::Hero() {
     healFull();
 }
 
+int Hero::hp() const {
+    return hp_;
+}
+
+int Hero::strengthLevel() const {
+    return strengthLevel_;
+}
+
+int Hero::agilityLevel() const {
+    return agilityLevel_;
+}
+
+int Hero::enduranceLevel() const {
+    return enduranceLevel_;
+}
+
+bool Hero::isAlive() const {
+    return hp_ > 0;
+}
+
 int Hero::maxHp() const {
     switch (enduranceLevel_) {
         case 1: return 100;
@@ -65,9 +85,9 @@ void Hero::setStats(int strength, int agility, int endurance, int hp) {
 std::string Hero::statsLine() const {
     std::ostringstream out;
     out << "HP " << hp_ << "/" << maxHp()
-        << " | Ñèëà " << strengthLevel_
-        << " | Ëîâêîñòü " << agilityLevel_
-        << " | Âûíîñëèâîñòü " << enduranceLevel_;
+        << " | Ð¡Ð¸Ð»Ð° " << strengthLevel_
+        << " | Ð›Ð¾Ð²ÐºÐ¾ÑÑ‚ÑŒ " << agilityLevel_
+        << " | Ð’Ñ‹Ð½Ð¾ÑÐ»Ð¸Ð²Ð¾ÑÑ‚ÑŒ " << enduranceLevel_;
     return out.str();
 }
 

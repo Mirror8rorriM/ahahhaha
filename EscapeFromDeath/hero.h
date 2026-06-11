@@ -14,10 +14,10 @@ class Hero {
 public:
     Hero();
 
-    int hp() const { return hp_; }
-    int strengthLevel() const { return strengthLevel_; }
-    int agilityLevel() const { return agilityLevel_; }
-    int enduranceLevel() const { return enduranceLevel_; }
+    int hp() const;
+    int strengthLevel() const;
+    int agilityLevel() const;
+    int enduranceLevel() const;
 
     int maxHp() const;
     int attackDamage() const;
@@ -25,7 +25,7 @@ public:
 
     void receiveDamage(int damage);
     void healFull();
-    bool isAlive() const { return hp_ > 0; }
+    bool isAlive() const;
 
     bool train(StatType stat);
     void setStats(int strength, int agility, int endurance, int hp);

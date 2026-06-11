@@ -24,6 +24,22 @@ void ResourceManager::loadAll() {
     loadDialogues();
 }
 
+const std::map<std::string, LocationData>& ResourceManager::locations() const {
+    return locations_;
+}
+
+const std::map<std::string, EnemyData>& ResourceManager::enemies() const {
+    return enemies_;
+}
+
+const std::vector<CombatPhrase>& ResourceManager::combatPhrases() const {
+    return combatPhrases_;
+}
+
+const std::vector<DialogueEntry>& ResourceManager::dialogues() const {
+    return dialogues_;
+}
+
 const LocationData& ResourceManager::location(const std::string& id) const {
     auto it = locations_.find(id);
     if (it == locations_.end()) throw std::runtime_error("Unknown location: " + id);
@@ -90,13 +106,20 @@ void ResourceManager::loadCombatPhrases() {
 
 void ResourceManager::loadDialogues() {
     dialogues_.clear();
-    std::ifstream in(path("dialogues.txt"));
+    std::ifstream in(path("dialogues.txt"), std::ios::binary);
     if (!in) throw std::runtime_error("Cannot open dialogues.txt");
 
     std::string line;
     DialogueEntry current;
     bool hasHeader = false;
+    bool firstLine = true;
     while (std::getline(in, line)) {
+        if (firstLine) {
+            firstLine = false;
+            if (line.rfind("\xEF\xBB\xBF", 0) == 0) {
+                line.erase(0, 3);
+            }
+        }
         line = trim(line);
         if (line.empty() || line[0] == '#') continue;
 
@@ -125,7 +148,7 @@ void ResourceManager::loadDialogues() {
 
 void ResourceManager::saveGame(const std::string& savePath, const GameState& state, const Hero& hero) const {
     std::filesystem::create_directories(std::filesystem::path(savePath).parent_path());
-    std::ofstream out(savePath);
+    std::ofstream out(savePath, std::ios::binary);
     if (!out) throw std::runtime_error("Cannot write save: " + savePath);
 
     out << "day=" << state.day << "\n";
@@ -148,12 +171,19 @@ void ResourceManager::saveGame(const std::string& savePath, const GameState& sta
 }
 
 bool ResourceManager::loadGame(const std::string& savePath, GameState& state, Hero& hero) const {
-    std::ifstream in(savePath);
+    std::ifstream in(savePath, std::ios::binary);
     if (!in) return false;
 
     std::map<std::string, std::string> kv;
     std::string line;
+    bool firstLine = true;
     while (std::getline(in, line)) {
+        if (firstLine) {
+            firstLine = false;
+            if (line.rfind("\xEF\xBB\xBF", 0) == 0) {
+                line.erase(0, 3);
+            }
+        }
         auto pos = line.find('=');
         if (pos == std::string::npos) continue;
         kv[trim(line.substr(0, pos))] = trim(line.substr(pos + 1));

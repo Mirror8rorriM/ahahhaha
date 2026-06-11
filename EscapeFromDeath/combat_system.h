@@ -13,7 +13,7 @@ class CombatSystem {
 public:
     explicit CombatSystem(std::vector<CombatPhrase> phrases);
 
-    // Возвращает true, если герой победил, false если проиграл.
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РіРµСЂРѕР№ РїРѕР±РµРґРёР», false РµСЃР»Рё РїСЂРѕРёРіСЂР°Р».
     bool fight(Hero& hero, EnemyData enemyTemplate);
 
 private:
