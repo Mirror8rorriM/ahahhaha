@@ -4,6 +4,7 @@
 #include "json.h"
 #include "utils.h"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -128,47 +129,58 @@ void ResourceManager::loadDialogues() {
     std::ifstream in(path("dialogues.txt"), std::ios::binary);
     if (!in) throw std::runtime_error("Cannot open dialogues.txt");
 
-    std::string line;
-    DialogueEntry current;
-    bool hasHeader = false;
-    bool firstLine = true;
-    while (std::getline(in, line)) {
-        if (firstLine) {
-            firstLine = false;
-            if (line.rfind("\xEF\xBB\xBF", 0) == 0) {
-                line.erase(0, 3);
-            }
-        }
-        line = trim(line);
-        if (line.empty() || line[0] == '#') continue;
-
-        if (line.front() == '[' && line.back() == ']') {
-            if (hasHeader && !current.text.empty()) dialogues_.push_back(current);
-            current = DialogueEntry{};
-            hasHeader = true;
-
-            std::string header = line.substr(1, line.size() - 2);
-            for (const auto& part : split(header, ';')) {
-                auto pos = part.find('=');
-                if (pos == std::string::npos) continue;
-                std::string key = trim(part.substr(0, pos));
-                std::string value = trim(part.substr(pos + 1));
-                if (key == "npc") current.npcId = value;
-                if (key == "day") current.minDay = std::stoi(value);
-                if (key == "location") current.locationId = value;
-            }
-        } else if (hasHeader) {
-            if (!current.text.empty()) current.text += "\n";
-            current.text += line;
-        }
+    std::ostringstream buffer;
+    buffer << in.rdbuf();
+    std::string content = buffer.str();
+    if (content.rfind("\xEF\xBB\xBF", 0) == 0) {
+        content.erase(0, 3);
     }
-    if (hasHeader && !current.text.empty()) dialogues_.push_back(current);
-}
 
+    std::size_t blockStart = content.find("[npc=");
+    while (blockStart != std::string::npos) {
+        std::size_t headerEnd = content.find(']', blockStart);
+        if (headerEnd == std::string::npos) break;
+
+        std::size_t nextBlock = content.find("[npc=", headerEnd + 1);
+        std::string header = content.substr(blockStart + 1, headerEnd - blockStart - 1);
+        std::string text = nextBlock == std::string::npos
+            ? content.substr(headerEnd + 1)
+            : content.substr(headerEnd + 1, nextBlock - headerEnd - 1);
+
+        DialogueEntry entry;
+        bool validHeader = true;
+        for (const auto& part : split(header, ';')) {
+            auto pos = part.find('=');
+            if (pos == std::string::npos) continue;
+            std::string key = trim(part.substr(0, pos));
+            std::string value = trim(part.substr(pos + 1));
+            if (key == "npc") entry.npcId = value;
+            if (key == "day") {
+                try {
+                    entry.minDay = std::stoi(value);
+                } catch (const std::exception&) {
+                    validHeader = false;
+                }
+            }
+            if (key == "location") entry.locationId = value;
+        }
+
+        entry.text = trim(text);
+        if (validHeader && !entry.npcId.empty() && !entry.locationId.empty() && !entry.text.empty()) {
+            dialogues_.push_back(std::move(entry));
+        }
+
+        blockStart = nextBlock;
+    }
+}
 
 void ResourceManager::loadItemUseRules() {
     itemUseRules_.clear();
-    Json root = JsonParser::parseFile(path("item_uses.json").string());
+    const auto itemUsesPath = path("item_uses.json");
+    if (!std::filesystem::exists(itemUsesPath)) {
+        return;
+    }
+    Json root = JsonParser::parseFile(itemUsesPath.string());
 
     for (const auto& item : root.at("uses").asArray()) {
         ItemUseRule rule;

@@ -59,10 +59,10 @@ bool CombatSystem::fight(Hero& hero, EnemyData enemyTemplate) {
         const auto finish = std::chrono::steady_clock::now();
         const double seconds = std::chrono::duration<double>(finish - start).count();
 
-        answer = toLowerAscii(trim(answer));
+        answer = toLowerUtf8(trim(answer));
         bool correct = false;
         for (const auto& reaction : phrase.reactions) {
-            if (toLowerAscii(reaction.word) == answer) {
+            if (toLowerUtf8(reaction.word) == answer) {
                 correct = true;
                 break;
             }

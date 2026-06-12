@@ -41,9 +41,19 @@ private:
     void actionInfirmarySearch();
     void actionReadLibrary();
     void actionTalkSmuggler();
+    void actionRobSmuggler();
     void actionTalkLibrarian();
+    void actionThreatenLibrarian();
+    void actionTalkOldTimer();
+    void actionThreatenOldTimer();
     void actionTalkStrongman();
+    void actionTalkGangBoss();
     void actionTalkGambler();
+    void actionTalkCorruptGuard();
+    void actionTalkLaundryman();
+    void actionPressureLaundryman();
+    void actionTalkCook();
+    void actionFightPrisoner();
     void actionSearchLaundry();
     void actionSearchCafeteria();
     void actionSearchYard();
@@ -57,6 +67,8 @@ private:
     void victory(const std::string& text);
 
     bool chance(int percent);
+    bool fightEnemy(const std::string& enemyId);
+    void printLatestDialogue(const std::string& npcId, const std::string& locationId) const;
     void printInventory() const;
     void addItemOnce(const std::string& item, const std::string& message);
 

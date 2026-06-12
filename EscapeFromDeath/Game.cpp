@@ -3,6 +3,7 @@
 #include "console_encoding.h"
 #include "utils.h"
 
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
@@ -152,6 +153,12 @@ std::vector<Game::MenuAction> Game::buildActions() {
     const std::string& id = loc.id;
     if (id == "cell") {
         actions.push_back({"Поспать до следующего дня", [this]() { actionSleep(); }});
+        if (state_.day >= 2) {
+            actions.push_back({"Поговорить со Стариком", [this]() { actionTalkOldTimer(); }});
+            if (!state_.flag("old_timer_intimidated")) {
+                actions.push_back({"Надавить на Старика силой", [this]() { actionThreatenOldTimer(); }});
+            }
+        }
     } else if (id == "gym") {
         actions.push_back({"Тренировка силы", [this]() { actionTrain(StatType::Strength); }});
         actions.push_back({"Тренировка ловкости", [this]() { actionTrain(StatType::Agility); }});
@@ -161,23 +168,45 @@ std::vector<Game::MenuAction> Game::buildActions() {
         }
     } else if (id == "shower") {
         actions.push_back({"Помыться и восстановить здоровье", [this]() { actionShower(); }});
+        if (state_.day >= 3) {
+            actions.push_back({"Поговорить с Авторитетом", [this]() { actionTalkGangBoss(); }});
+        }
     } else if (id == "infirmary") {
         actions.push_back({"Осмотреть лазарет", [this]() { actionInfirmarySearch(); }});
     } else if (id == "library") {
         actions.push_back({"Почитать о старой части тюрьмы", [this]() { actionReadLibrary(); }});
         actions.push_back({"Поговорить с Библиотекарем", [this]() { actionTalkLibrarian(); }});
+        if (!state_.flag("hidden_map_found")) {
+            actions.push_back({"Угрожать Библиотекарю", [this]() { actionThreatenLibrarian(); }});
+        }
     } else if (id == "cafeteria") {
         actions.push_back({"Осмотреть столовую", [this]() { actionSearchCafeteria(); }});
         if (state_.day >= 3) {
             actions.push_back({"Поговорить с Контрабандистом", [this]() { actionTalkSmuggler(); }});
+            if (!state_.flag("smuggler_trust") && !state_.flag("smuggler_enemy")) {
+                actions.push_back({"Попытаться ограбить Контрабандиста", [this]() { actionRobSmuggler(); }});
+            }
+        }
+        if (state_.day >= 4) {
+            actions.push_back({"Поговорить с Поваром", [this]() { actionTalkCook(); }});
         }
     } else if (id == "yard") {
         actions.push_back({"Поговорить с заключёнными во дворе", [this]() { actionSearchYard(); }});
+        if (state_.day >= 2) {
+            actions.push_back({"Спровоцировать драку с Зеком", [this]() { actionFightPrisoner(); }});
+        }
         if (state_.day >= 4) {
             actions.push_back({"Сыграть с Игроманом на ставку", [this]() { actionTalkGambler(); }});
         }
     } else if (id == "laundry") {
         actions.push_back({"Обыскать прачечную", [this]() { actionSearchLaundry(); }});
+        actions.push_back({"Поговорить с Прачечником", [this]() { actionTalkLaundryman(); }});
+        if (!state_.flag("laundryman_defeated")) {
+            actions.push_back({"Силой отобрать ключ у Прачечника", [this]() { actionPressureLaundryman(); }});
+        }
+        if (state_.day >= 2) {
+            actions.push_back({"Поговорить с коррумпированным охранником", [this]() { actionTalkCorruptGuard(); }});
+        }
     }
 
     if (!state_.inventory.empty()) {
@@ -281,12 +310,32 @@ void Game::actionTalkSmuggler() {
     }
 }
 
+void Game::actionRobSmuggler() {
+    if (state_.flag("smuggler_trust")) {
+        std::cout << "Контрабандист уже считает вас своим. Грабить его сейчас — плохая идея.\n";
+        return;
+    }
+    if (!askYesNo("Напасть на Контрабандиста и попытаться отобрать товар?")) return;
+
+    spendAction();
+    if (fightEnemy("smuggler")) {
+        state_.setFlag("smuggler_enemy");
+        addItemOnce("Отмычка", "Вы отобрали у Контрабандиста отмычку.");
+        addItemOnce("Сигареты", "В его кармане нашлась пачка сигарет — в тюрьме это почти валюта.");
+        std::cout << "Теперь Контрабандист ваш враг, но часть его товара у вас.\n";
+    } else {
+        handleLostFight();
+    }
+}
+
 void Game::actionTalkLibrarian() {
     spendAction();
-    auto lines = resources_.dialoguesFor("librarian", state_.day, "library");
-    if (!lines.empty()) std::cout << lines.back().text << "\n";
+    printLatestDialogue("librarian", "library");
 
-    if (!state_.flag("info_laundry_exit")) {
+    if (state_.flag("gang_librarian_debt") && !state_.flag("hidden_map_found")) {
+        state_.setFlag("hidden_map_found");
+        std::cout << "Услышав имя Авторитета, Библиотекарь достал старую схему тоннелей без лишних вопросов.\n";
+    } else if (!state_.flag("info_laundry_exit")) {
         state_.setFlag("info_laundry_exit");
         std::cout << "Библиотекарь шепчет: 'Ищи не стены, а стоки. Прачечная ближе всего к свободе'.\n";
     } else {
@@ -294,10 +343,84 @@ void Game::actionTalkLibrarian() {
     }
 }
 
+void Game::actionThreatenLibrarian() {
+    if (state_.flag("hidden_map_found")) {
+        std::cout << "Схема тоннелей уже у вас.\n";
+        return;
+    }
+    if (!askYesNo("Попытаться выбить у Библиотекаря карту силой?")) return;
+
+    spendAction();
+    if (fightEnemy("librarian")) {
+        state_.setFlag("hidden_map_found");
+        state_.setFlag("librarian_intimidated");
+        std::cout << "Библиотекарь дрожащими руками достал схему старых тоннелей. Информация добыта, но доверять вам он больше не будет.\n";
+    } else {
+        handleLostFight();
+    }
+}
+
+void Game::actionTalkOldTimer() {
+    spendAction();
+    printLatestDialogue("old_timer", "cell");
+
+    if (!state_.flag("old_timer_pipe_noise")) {
+        state_.setFlag("old_timer_pipe_noise");
+        std::cout << "Вы запомнили: шум труб в душевой может скрыть возню с решёткой или замком.\n";
+    } else if (state_.day >= 7 && !state_.flag("rainy_night_escape")) {
+        state_.setFlag("rainy_night_escape");
+        std::cout << "Теперь вы знаете про дождь и собак. Это может помочь в финальную ночь.\n";
+    } else {
+        std::cout << "Старик больше ничего нового не говорит.\n";
+    }
+}
+
+void Game::actionThreatenOldTimer() {
+    if (!askYesNo("Запугать Старика и выбить информацию силой?")) return;
+
+    spendAction();
+    if (fightEnemy("old_timer")) {
+        state_.setFlag("old_timer_intimidated");
+        state_.setFlag("old_timer_pipe_noise");
+        if (state_.day >= 7) {
+            state_.setFlag("rainy_night_escape");
+        }
+        std::cout << "Старик рассказал про шум труб и старые слухи, но после этого больше не станет помогать добровольно.\n";
+    } else {
+        handleLostFight();
+    }
+}
+
 void Game::actionTalkStrongman() {
     spendAction();
     state_.setFlag("strongman_friend");
     addItemOnce("Железный прут", "Силач дал вам железный прут и пообещал отвлечь охрану в нужный момент.");
+}
+
+void Game::actionTalkGangBoss() {
+    spendAction();
+    printLatestDialogue("gang_boss", "shower");
+
+    if (!state_.flag("gang_respect")) {
+        std::cout << "Авторитет проверяет, есть ли у вас характер.\n";
+        if (!askYesNo("Выйти против него в драку?")) return;
+
+        if (fightEnemy("gang_boss")) {
+            state_.setFlag("gang_respect");
+            addItemOnce("Заточка", "Авторитет бросил вам самодельную заточку: 'Не потеряй, новенький'.");
+            std::cout << "После этой драки вас стали воспринимать серьёзнее.\n";
+        } else {
+            handleLostFight();
+        }
+        return;
+    }
+
+    if (state_.day >= 6 && !state_.flag("gang_librarian_debt")) {
+        state_.setFlag("gang_librarian_debt");
+        std::cout << "Авторитет сказал, что Библиотекарь должен ему услугу. Теперь можно попросить старые чертежи без драки.\n";
+    } else {
+        std::cout << "Авторитет кивает: 'Держи слово — и мои люди не будут мешать'.\n";
+    }
 }
 
 void Game::actionTalkGambler() {
@@ -310,6 +433,108 @@ void Game::actionTalkGambler() {
         std::cout << "Вы выиграли. Игроман отдаёт карту ночных обходов.\n";
     } else {
         std::cout << "Вы проиграли ставку. День стал немного хуже, но жизнь продолжается.\n";
+    }
+}
+
+void Game::actionTalkCorruptGuard() {
+    spendAction();
+    printLatestDialogue("corrupt_guard", "laundry");
+
+    if (!state_.flag("corrupt_guard_contact")) {
+        state_.setFlag("corrupt_guard_contact");
+        std::cout << "Вы поняли: этот охранник берёт взятки и боится лишнего шума. Сигареты могут сработать как валюта.\n";
+        return;
+    }
+
+    if (state_.hasItem("Сигареты") && !state_.flag("laundry_bribe_paid")) {
+        std::cout << "У вас есть сигареты. Их можно применить здесь через действие 'Применить предмет из инвентаря'.\n";
+        return;
+    }
+
+    if (!state_.flag("corrupt_guard_defeated") && askYesNo("Попытаться выбить у охранника пропуск силой?")) {
+        if (fightEnemy("corrupt_guard")) {
+            state_.setFlag("corrupt_guard_defeated");
+            state_.setFlag("guard_schedule");
+            addItemOnce("Пропуск прачечной", "После драки вы забрали у охранника пропуск прачечной.");
+        } else {
+            handleLostFight();
+        }
+        return;
+    }
+
+    std::cout << "Охранник недовольно отворачивается.\n";
+}
+
+void Game::actionTalkLaundryman() {
+    spendAction();
+    printLatestDialogue("laundryman", "laundry");
+
+    if (!state_.flag("laundryman_knows_you")) {
+        state_.setFlag("laundryman_knows_you");
+        addItemOnce("Кусок проволоки", "Прачечник незаметно пнул к вам тонкий кусок проволоки: 'Не видел я этого'.");
+    } else if (state_.day >= 5 && !state_.flag("laundry_machine_noise")) {
+        state_.setFlag("laundry_machine_noise");
+        std::cout << "Вы запомнили момент, когда центрифуга глушит любые звуки. Проволоку можно будет применить к замку.\n";
+    } else {
+        std::cout << "Прачечник делает вид, что вас не знает.\n";
+    }
+}
+
+void Game::actionPressureLaundryman() {
+    if (!askYesNo("Напасть на Прачечника и попытаться отобрать ключ?")) return;
+
+    spendAction();
+    if (fightEnemy("laundryman")) {
+        state_.setFlag("laundryman_defeated");
+        state_.setFlag("laundry_lock_weak");
+        addItemOnce("Ключ от подсобки", "Вы отобрали у Прачечника ключ от подсобки.");
+        std::cout << "Заодно вы заметили слабое крепление на технической двери.\n";
+    } else {
+        handleLostFight();
+    }
+}
+
+void Game::actionTalkCook() {
+    spendAction();
+    printLatestDialogue("cook", "cafeteria");
+
+    if (!state_.flag("cook_deal") && state_.hasItem("Железный прут")) {
+        if (askYesNo("Отдать Повару железный прут, чтобы он разобрался с крысами?")) {
+            state_.removeItem("Железный прут");
+            state_.setFlag("cook_deal");
+            addItemOnce("Порошок для каши", "Повар спрятал вам странный порошок: 'К вечеру подсыпешь — посты опустеют'.");
+            return;
+        }
+    }
+
+    if (state_.flag("cook_deal") && state_.day >= 7 && !state_.flag("guards_food_poisoned")) {
+        state_.setFlag("guards_food_poisoned");
+        std::cout << "Повар сдержал слово: дежурная смена будет занята животами, а не вами.\n";
+        return;
+    }
+
+    if (!state_.flag("cook_defeated") && askYesNo("Попытаться забрать кухонный тесак силой?")) {
+        if (fightEnemy("cook")) {
+            state_.setFlag("cook_defeated");
+            addItemOnce("Кухонный тесак", "Вы забрали тяжёлый кухонный тесак.");
+        } else {
+            handleLostFight();
+        }
+        return;
+    }
+
+    std::cout << "Повар ждёт железяку или держит язык за зубами.\n";
+}
+
+void Game::actionFightPrisoner() {
+    if (!askYesNo("Начать драку с местным зеком?")) return;
+
+    spendAction();
+    if (fightEnemy("prisoner")) {
+        state_.setFlag("prisoner_respect");
+        addItemOnce("Сигареты", "После победы вам молча протянули пачку сигарет — знак уважения и полезная валюта.");
+    } else {
+        handleLostFight();
     }
 }
 
@@ -465,14 +690,14 @@ void Game::finaleEscape() {
     }
 
     if (choice == 2) {
-        if (!state_.hasItem("Железный прут") && !state_.hasItem("Скальпель")) {
+        if (!state_.hasItem("Железный прут") && !state_.hasItem("Скальпель") && !state_.hasItem("Заточка") && !state_.hasItem("Кухонный тесак") && !state_.flag("yard_weapon_ready")) {
             gameOver("Во дворе вас заметили прожекторы. Без оружия прорваться не удалось.");
             return;
         }
         CombatSystem combat(resources_.combatPhrases());
         bool won = combat.fight(hero_, resources_.enemy("guard_squad"));
-        if (won && (state_.flag("guard_schedule") || state_.flag("rope_escape_ready") || state_.flag("yard_fence_weakened"))) {
-            victory("Вы прорвались через двор, используя подготовленное снаряжение и карту обходов. Свобода пахнет холодным воздухом.");
+        if (won && (state_.flag("guard_schedule") || state_.flag("rope_escape_ready") || state_.flag("yard_fence_weakened") || state_.flag("rainy_night_escape") || state_.flag("guards_food_poisoned"))) {
+            victory("Вы прорвались через двор, используя подготовленное снаряжение, слухи и хаос среди охраны. Свобода пахнет холодным воздухом.");
         } else {
             gameOver("Даже победив часть охраны, вы выбрали слишком заметный маршрут. Вас схватили у стены.");
         }
@@ -482,16 +707,16 @@ void Game::finaleEscape() {
     int score = 0;
     std::vector<std::string> missing;
 
-    if (state_.flag("info_old_tunnels") || state_.flag("info_laundry_exit") || state_.flag("hidden_map_found")) ++score;
+    if (state_.flag("info_old_tunnels") || state_.flag("info_laundry_exit") || state_.flag("hidden_map_found") || state_.flag("old_timer_pipe_noise") || state_.flag("gang_librarian_debt")) ++score;
     else missing.push_back("нет информации о тоннеле");
 
-    if (state_.hasItem("Отмычка") || state_.hasItem("Скальпель") || state_.hasItem("Самодельная отвёртка") || state_.flag("laundry_lock_weak") || state_.flag("laundry_lock_opened")) ++score;
+    if (state_.hasItem("Отмычка") || state_.hasItem("Скальпель") || state_.hasItem("Самодельная отвёртка") || state_.hasItem("Ключ от подсобки") || state_.hasItem("Кусок проволоки") || state_.flag("laundry_lock_weak") || state_.flag("laundry_lock_opened") || state_.flag("laundry_machine_noise")) ++score;
     else missing.push_back("нечем открыть техническую дверь");
 
-    if (state_.hasItem("Верёвка") || state_.hasItem("Форма заключённого-прачки") || state_.flag("rope_escape_ready") || state_.flag("laundry_disguise_ready")) ++score;
+    if (state_.hasItem("Верёвка") || state_.hasItem("Форма заключённого-прачки") || state_.hasItem("Пропуск прачечной") || state_.flag("rope_escape_ready") || state_.flag("laundry_disguise_ready") || state_.flag("laundry_pass_ready")) ++score;
     else missing.push_back("нет снаряжения/маскировки");
 
-    if (state_.flag("guard_schedule") || state_.flag("strongman_friend")) ++score;
+    if (state_.flag("guard_schedule") || state_.flag("strongman_friend") || state_.flag("rainy_night_escape") || state_.flag("guards_food_poisoned") || state_.flag("gang_respect")) ++score;
     else missing.push_back("неизвестны ночные обходы");
 
     if (score >= 3) {
@@ -516,6 +741,18 @@ void Game::victory(const std::string& text) {
 bool Game::chance(int percent) {
     std::uniform_int_distribution<int> dist(1, 100);
     return dist(rng_) <= percent;
+}
+
+bool Game::fightEnemy(const std::string& enemyId) {
+    CombatSystem combat(resources_.combatPhrases());
+    return combat.fight(hero_, resources_.enemy(enemyId));
+}
+
+void Game::printLatestDialogue(const std::string& npcId, const std::string& locationId) const {
+    auto lines = resources_.dialoguesFor(npcId, state_.day, locationId);
+    if (!lines.empty()) {
+        std::cout << lines.back().text << "\n";
+    }
 }
 
 void Game::printInventory() const {
