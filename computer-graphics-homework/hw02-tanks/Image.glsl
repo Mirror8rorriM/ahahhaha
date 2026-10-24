@@ -1,6 +1,6 @@
 // iChannel0 = Buffer A. Quaternion layout: (x, y, z, w).
 const float PI = 3.14159265359;
-vec4 control, shot;
+vec4 control, shot, crater;
 
 vec4 axisAngle(vec3 axis, float angle) {
     return vec4(normalize(axis) * sin(angle * 0.5), cos(angle * 0.5));
@@ -48,8 +48,15 @@ vec2 tank(vec3 p, vec3 center, float yaw, float elevation, float colorId) {
     return nearer(result, vec2(cylinderX(barrel - vec3(1.05, 0.0, 0.0), 0.79, 0.09), 3.0));
 }
 
+float groundDistance(vec3 p, vec4 crater) {
+    if (crater.w < 0.5) return p.y;
+    vec3 center = crater.xyz + vec3(0.0, 0.4, 0.0);
+    float sphere = length(p - center) - 0.8;
+    return max(p.y, -sphere);
+}
+
 vec2 scene(vec3 p) {
-    vec2 hit = vec2(p.y, 0.0);
+    vec2 hit = vec2(groundDistance(p, crater), 0.0);
     hit = nearer(hit, tank(p, vec3(-3.0, 0.0, 0.0), control.x, control.y, 1.0));
     hit = nearer(hit, tank(p, vec3(3.0, 0.0, 0.0), PI, radians(8.0), 2.0));
     if (control.z > 0.5)
@@ -75,6 +82,7 @@ vec3 material(float id) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     control = texelFetch(iChannel0, ivec2(0, 0), 0);
     shot = texelFetch(iChannel0, ivec2(1, 0), 0);
+    crater = texelFetch(iChannel0, ivec2(3, 0), 0);
 
     vec2 uv = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
     vec3 camera = vec3(8.0, 6.0, 10.0);

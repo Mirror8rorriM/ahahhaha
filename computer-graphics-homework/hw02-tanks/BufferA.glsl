@@ -17,22 +17,33 @@ float targetDistance(vec3 p) {
     return min(hull, turret);
 }
 
+float groundDistance(vec3 p, vec4 crater) {
+    if (crater.w < 0.5) return p.y;
+    vec3 center = crater.xyz + vec3(0.0, 0.4, 0.0);
+    float sphere = length(p - center) - 0.8;
+    return max(p.y, -sphere);
+}
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     ivec2 pixel = ivec2(fragCoord);
     fragColor = vec4(0.0);
-    if (pixel.y != 0 || pixel.x > 2) return;
+    if (pixel.y != 0 || pixel.x > 3) return;
 
     // Texel 0: yaw, elevation, projectile-active, unused.
     // Texel 1: projectile position xyz, age.
     // Texel 2: projectile velocity xyz, unused.
+    // Texel 3: crater center xyz (on y=0), active flag.
     vec4 control = texelFetch(iChannel0, ivec2(0, 0), 0);
     vec4 shot = texelFetch(iChannel0, ivec2(1, 0), 0);
     vec4 velocity = texelFetch(iChannel0, ivec2(2, 0), 0);
+
+    vec4 crater = texelFetch(iChannel0, ivec2(3, 0), 0);
 
     if (iFrame == 0) {
         control = vec4(0.0, radians(12.0), 0.0, 0.0);
         shot = vec4(0.0);
         velocity = vec4(0.0);
+        crater = vec4(0.0);
     } else {
         float dt = clamp(iTimeDelta, 0.0, 0.05);
         control.x += (key(37, 0) - key(39, 0)) * dt * 0.85;
@@ -48,8 +59,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
                 shot.xyz += velocity.xyz * h + vec3(0.0, -0.5 * 9.81 * h * h, 0.0);
                 velocity.y -= 9.81 * h;
                 shot.w += h;
-                if (shot.y <= 0.1 || targetDistance(shot.xyz) <= 0.1 || shot.w > 8.0)
+                if (groundDistance(shot.xyz, crater) <= 0.1) {
+                    crater = vec4(shot.x, 0.0, shot.z, 1.0);
                     control.z = 0.0;
+                } else if (targetDistance(shot.xyz) <= 0.1 || shot.w > 8.0) {
+                    control.z = 0.0;
+                }
             }
         }
 
@@ -66,4 +81,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     if (pixel.x == 0) fragColor = control;
     if (pixel.x == 1) fragColor = shot;
     if (pixel.x == 2) fragColor = velocity;
+    if (pixel.x == 3) fragColor = crater;
 }
